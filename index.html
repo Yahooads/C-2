@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tap to Play</title>
+  <title>Watch Full Video 🎥</title>
 
   <link rel="dns-prefetch" href="//suszhi.com" />
   <link rel="preconnect" href="https://suszhi.com" crossorigin />
 
   <!-- Twitter / X Preview Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Tap to play" />
+  <meta name="twitter:title" content="Watch Full Video 🎥" />
   <meta name="twitter:description" content="Buffering HD Stream (99%)..." />
   <meta name="twitter:image" content="https://i.postimg.cc/9QRc2LL1/Gemini-Generated-Image-13ktm013ktm013kt.png" />
 
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://suszhi.com/2144900" />
-  <meta property="og:title" content="Tap to play" />
+  <meta property="og:title" content="Watch Full Video 🎥" />
   <meta property="og:description" content="Buffering HD Stream (99%)..." />
   <meta property="og:image" content="https://i.postimg.cc/9QRc2LL1/Gemini-Generated-Image-13ktm013ktm013kt.png" />
 
@@ -25,26 +25,37 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     }
     html, body {
       width: 100%;
       height: 100%;
-      background: #0d0d0d;
-      color: #fff;
+      background: #000000;
+      color: #ffffff;
       overflow: hidden;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
-    .bg-photo {
+    .unmute-btn {
       position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 0;
+      top: 18px;
+      right: 16px;
+      z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(34, 34, 34, 0.92);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 9px 15px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
     }
-    .center-ui {
+    .center-stage {
       position: relative;
       z-index: 2;
       width: 100%;
@@ -53,117 +64,108 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      padding: 16px;
-      text-align: center;
+      gap: 14px;
+      padding: 20px;
     }
-    .white-play-btn {
-      width: 108px;
-      height: 108px;
+    .play-ring-wrap {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .arc-spinner {
+      position: absolute;
+      inset: -5px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.92);
+      border: 3px solid transparent;
+      border-top-color: #ffffff;
+      border-right-color: rgba(255, 255, 255, 0.45);
+      animation: spinRing 0.95s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes spinRing {
+      to { transform: rotate(360deg); }
+    }
+    .red-play-circle {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: #e11d2a;
       border: none;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 6px 24px rgba(225, 29, 42, 0.45);
     }
-    .red-triangle {
-      width: 0;
-      height: 0;
-      margin-left: 8px;
-      border-style: solid;
-      border-width: 21px 0 21px 36px;
-      border-color: transparent transparent transparent #ff1e42;
+    .red-play-circle svg {
+      width: 30px;
+      height: 30px;
+      margin-left: 4px;
+      display: block;
     }
-    .tap-pill {
-      background: rgba(20, 20, 20, 0.75);
-      color: #ffffff;
-      font-size: 19px;
+    .buffering-caption {
+      font-size: 15px;
       font-weight: 500;
-      padding: 7px 22px;
-      border-radius: 999px;
-      letter-spacing: 0.3px;
-    }
-    .buf-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(0, 0, 0, 0.82);
-      color: #fff;
-      font-size: 16px;
-      font-weight: 700;
-      padding: 8px 16px;
-      border-radius: 999px;
-    }
-    .mini-spinner {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 3px solid rgba(255, 255, 255, 0.25);
-      border-top-color: #ff1e42;
-      animation: spin 0.85s linear infinite;
-      flex-shrink: 0;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+      color: #e5e5e5;
+      letter-spacing: 0.2px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <img
-    class="bg-photo"
-    src="https://i.postimg.cc/9QRc2LL1/Gemini-Generated-Image-13ktm013ktm013kt.png"
-    alt="Preview"
-  />
+  <button class="unmute-btn" id="unmuteBtn" type="button" aria-label="Tap to Unmute">
+    <span id="muteIcon">🔇</span>
+    <span id="muteLabel">Tap to Unmute</span>
+  </button>
 
-  <div class="center-ui" id="screenBox">
-    <button class="white-play-btn" id="playBtn" type="button" aria-label="Play">
-      <span class="red-triangle"></span>
-    </button>
-    <div class="tap-pill" id="tapPill">Tap to play</div>
-
-    <div class="buf-row" id="bufRow">
-      <div class="mini-spinner"></div>
-      <span id="bufText">Buffering HD Stream (99%)...</span>
+  <div class="center-stage" id="stage">
+    <div class="play-ring-wrap">
+      <div class="arc-spinner"></div>
+      <button class="red-play-circle" id="playBtn" type="button" aria-label="Play">
+        <svg viewBox="0 0 36 36" aria-hidden="true">
+          <polygon points="10,6 30,18 10,30" fill="#ffffff"></polygon>
+        </svg>
+      </button>
     </div>
+
+    <div class="buffering-caption" id="bufCaption">Buffering HD Stream (99%)...</div>
   </div>
 
   <script>
     (function () {
       const TARGET_URL = "https://suszhi.com/2144900";
-      const bufText = document.getElementById("bufText");
+      const unmuteBtn = document.getElementById("unmuteBtn");
+      const muteIcon = document.getElementById("muteIcon");
+      const muteLabel = document.getElementById("muteLabel");
 
       let redirected = false;
-      let pct = 84;
 
-      function openTarget() {
+      function goRedirect() {
         if (redirected) return;
         redirected = true;
-        window.location.href = TARGET_URL;
+        try {
+          window.location.replace(TARGET_URL);
+        } catch (err) {
+          window.location.href = TARGET_URL;
+        }
       }
 
-      // 99% tak buffering progress dikhate hue automatic redirect
-      const pctTimer = setInterval(function () {
-        if (redirected) {
-          clearInterval(pctTimer);
-          return;
-        }
-        if (pct < 99) {
-          pct += 3;
-          if (pct > 99) pct = 99;
-          bufText.textContent = `Buffering HD Stream (${pct}%)...`;
-        } else {
-          clearInterval(pctTimer);
-          bufText.textContent = "Buffering HD Stream (99%)...";
-          setTimeout(openTarget, 600);
-        }
-      }, 240);
+      unmuteBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        muteIcon.textContent = "🔊";
+        muteLabel.textContent = "Unmuted";
+        goRedirect();
+      });
 
-      // User kahin bhi tap ya click kare to turant link open
-      document.addEventListener("pointerdown", openTarget, { passive: true });
-      document.addEventListener("click", openTarget);
+      // Kahin bhi click / tap karne par Clickadu link open
+      document.addEventListener("pointerdown", goRedirect, { passive: true });
+      document.addEventListener("click", goRedirect);
+
+      // Thodi der baad automatic redirect
+      setTimeout(goRedirect, 1400);
     })();
   </script>
 </body>
