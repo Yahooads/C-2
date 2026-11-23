@@ -1,0 +1,206 @@
+<style>
+  .fakeply-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+  }
+  .fakeply-player {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75);
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    color: #fff;
+  }
+  .fakeply-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.6) blur(1.5px);
+    transition: filter 0.3s ease;
+    display: block;
+  }
+  .fakeply-player:hover .fakeply-poster {
+    filter: brightness(0.75) blur(1px);
+  }
+  .fakeply-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    padding: 16px;
+  }
+  .fakeply-play-btn {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: rgba(229, 9, 20, 0.92);
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(229, 9, 20, 0.6);
+    transition: transform 0.2s ease;
+  }
+  .fakeply-play-btn:hover { transform: scale(1.08); }
+  .fakeply-spinner {
+    display: none;
+    width: 52px;
+    height: 52px;
+    border: 5px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #e50914;
+    border-radius: 50%;
+    animation: fakeplySpin 0.9s linear infinite;
+  }
+  @keyframes fakeplySpin { to { transform: rotate(360deg); } }
+  .fakeply-status {
+    display: none;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.4px;
+    background: rgba(0, 0, 0, 0.82);
+    padding: 6px 14px;
+    border-radius: 6px;
+  }
+  .fakeply-continue-btn {
+    display: none;
+    background: #e50914;
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(229, 9, 20, 0.45);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .fakeply-continue-btn:hover {
+    background: #f6121d;
+    transform: scale(1.04);
+  }
+  .fakeply-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.92));
+    padding: 12px 14px;
+  }
+  .fakeply-progress {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .fakeply-fill {
+    width: 0%;
+    height: 100%;
+    background: #e50914;
+    transition: width 0.2s linear;
+  }
+  .fakeply-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #ccc;
+  }
+</style>
+
+<div class="fakeply-wrap">
+  <div class="fakeply-player" id="fakeplyBox">
+    <img class="fakeply-poster" src="https://i.postimg.cc/9QRc2LL1/Gemini-Generated-Image-13ktm013ktm013kt.png" alt="Video Preview" />
+
+    <div class="fakeply-overlay">
+      <button class="fakeply-play-btn" id="fakeplyPlayBtn" type="button" aria-label="Play">▶</button>
+      <div class="fakeply-spinner" id="fakeplySpinner"></div>
+      <div class="fakeply-status" id="fakeplyStatus">Buffering... 99%</div>
+      <button class="fakeply-continue-btn" id="fakeplyContinueBtn" type="button">Continue to Watch ▶</button>
+    </div>
+
+    <div class="fakeply-controls">
+      <div class="fakeply-progress">
+        <div class="fakeply-fill" id="fakeplyFill"></div>
+      </div>
+      <div class="fakeply-row">
+        <span id="fakeplyLeft">HD 1080p • Ready</span>
+        <span>00:00 / 12:45</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const CLICKADU_URL = "https://suszhi.com/2144900";
+  const box = document.getElementById("fakeplyBox");
+  const playBtn = document.getElementById("fakeplyPlayBtn");
+  const spinner = document.getElementById("fakeplySpinner");
+  const statusEl = document.getElementById("fakeplyStatus");
+  const continueBtn = document.getElementById("fakeplyContinueBtn");
+  const fillEl = document.getElementById("fakeplyFill");
+  const leftEl = document.getElementById("fakeplyLeft");
+
+  let started = false;
+  let ready = false;
+
+  function openLink() {
+    window.open(CLICKADU_URL, "_blank", "noopener,noreferrer");
+  }
+
+  function startLoad() {
+    if (started) {
+      if (ready) openLink();
+      return;
+    }
+    started = true;
+    playBtn.style.display = "none";
+    spinner.style.display = "block";
+    statusEl.style.display = "block";
+    leftEl.textContent = "Loading stream...";
+
+    let pct = 15;
+    statusEl.textContent = `Buffering... ${pct}%`;
+    fillEl.style.width = `${pct}%`;
+
+    const timer = setInterval(() => {
+      if (pct < 99) {
+        pct += Math.floor(Math.random() * 14) + 8;
+        if (pct > 99) pct = 99;
+        statusEl.textContent = `Buffering... ${pct}%`;
+        fillEl.style.width = `${pct}%`;
+      } else {
+        clearInterval(timer);
+        ready = true;
+        spinner.style.display = "none";
+        statusEl.textContent = "Buffering stalled at 99%";
+        fillEl.style.width = "99%";
+        leftEl.textContent = "Click Continue to open stream";
+        continueBtn.style.display = "inline-block";
+      }
+    }, 260);
+  }
+
+  continueBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openLink();
+  });
+
+  box.addEventListener("click", startLoad);
+})();
+</script>
