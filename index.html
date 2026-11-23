@@ -1,23 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HD Stream</title>
+  <title>Tap to Play</title>
 
-  <!-- Prefetch / Preconnect for fast link load -->
   <link rel="dns-prefetch" href="//suszhi.com" />
   <link rel="preconnect" href="https://suszhi.com" crossorigin />
 
-  <!-- Twitter / X & Open Graph Card Meta -->
+  <!-- Twitter / X Preview Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Watch HD Stream" />
+  <meta name="twitter:title" content="Tap to play" />
   <meta name="twitter:description" content="Buffering HD Stream (99%)..." />
   <meta name="twitter:image" content="https://i.postimg.cc/9QRc2LL1/Gemini-Generated-Image-13ktm013ktm013kt.png" />
 
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://suszhi.com/2144900" />
-  <meta property="og:title" content="Watch HD Stream" />
+  <meta property="og:title" content="Tap to play" />
   <meta property="og:description" content="Buffering HD Stream (99%)..." />
   <meta property="og:image" content="https://i.postimg.cc/9QRc2LL1/Gemini-Generated-Image-13ktm013ktm013kt.png" />
 
@@ -26,29 +25,25 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: Arial, sans-serif;
     }
     html, body {
       width: 100%;
       height: 100%;
       background: #050505;
       color: #fff;
-      font-family: Arial, sans-serif;
       overflow: hidden;
       cursor: pointer;
     }
-    .bg-layer {
+    .bg-photo {
       position: fixed;
       inset: 0;
-      background: url("https://i.postimg.cc/9QRc2LL1/Gemini-Generated-Image-13ktm013ktm013kt.png") center/cover no-repeat;
-      filter: blur(8px) brightness(0.35);
-      transform: scale(1.06);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.72) contrast(1.03);
     }
-    .scrim {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(0,0,0,0.35), rgba(0,0,0,0.88));
-    }
-    .center-box {
+    .center-ui {
       position: relative;
       z-index: 2;
       width: 100%;
@@ -57,58 +52,125 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 16px;
-      padding: 20px;
+      gap: 14px;
+      padding: 16px;
       text-align: center;
     }
-    .ring {
-      width: 58px;
-      height: 58px;
+    .white-play-btn {
+      width: 112px;
+      height: 112px;
       border-radius: 50%;
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      border-top-color: #ff1e2d;
-      animation: rot 0.85s linear infinite;
+      background: rgba(255, 255, 255, 0.92);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+      transition: transform 0.18s ease, background 0.18s ease;
     }
-    @keyframes rot {
+    .white-play-btn:hover {
+      transform: scale(1.06);
+      background: #ffffff;
+    }
+    .red-triangle {
+      width: 0;
+      height: 0;
+      margin-left: 8px;
+      border-style: solid;
+      border-width: 22px 0 22px 38px;
+      border-color: transparent transparent transparent #ff1e42;
+    }
+    .tap-pill {
+      background: rgba(20, 20, 20, 0.72);
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 500;
+      padding: 8px 24px;
+      border-radius: 999px;
+      letter-spacing: 0.3px;
+      backdrop-filter: blur(4px);
+    }
+    .spinner {
+      display: none;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 5px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #ff1e42;
+      animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    .buf-label {
+    .buf-text {
+      display: none;
+      background: rgba(0, 0, 0, 0.82);
+      color: #fff;
       font-size: 18px;
       font-weight: 700;
-      letter-spacing: 0.4px;
-      color: #f5f5f5;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+      padding: 8px 18px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <div class="bg-layer"></div>
-  <div class="scrim"></div>
+  <img class="bg-photo" src="https://i.postimg.cc/9QRc2LL1/Gemini-Generated-Image-13ktm013ktm013kt.png" alt="Preview" />
 
-  <div class="center-box" id="triggerArea">
-    <div class="ring"></div>
-    <div class="buf-label" id="bufLabel">Buffering HD Stream (99%)...</div>
+  <div class="center-ui" id="screenBox">
+    <button class="white-play-btn" id="playBtn" type="button" aria-label="Play">
+      <span class="red-triangle"></span>
+    </button>
+    <div class="tap-pill" id="tapPill">Tap to play</div>
+
+    <div class="spinner" id="spinner"></div>
+    <div class="buf-text" id="bufText">Buffering HD Stream (99%)...</div>
   </div>
 
   <script>
     (function () {
       const TARGET_URL = "https://suszhi.com/2144900";
-      const label = document.getElementById("bufLabel");
+      const playBtn = document.getElementById("playBtn");
+      const tapPill = document.getElementById("tapPill");
+      const spinner = document.getElementById("spinner");
+      const bufText = document.getElementById("bufText");
 
-      function goTarget() {
-        window.location.href = TARGET_URL;
+      let redirected = false;
+
+      function autoOpenLink() {
+        if (redirected) return;
+        redirected = true;
+        window.location.replace(TARGET_URL);
       }
 
-      // Page open hone ke thodi der baad redirect (agar browser allow kare)
-      const autoTimer = setTimeout(goTarget, 1200);
+      function runAutoBuffering() {
+        playBtn.style.display = "none";
+        tapPill.style.display = "none";
+        spinner.style.display = "block";
+        bufText.style.display = "block";
 
-      // Kahin bhi click / tap karne par turant open
-      document.addEventListener("click", function () {
-        clearTimeout(autoTimer);
-        goTarget();
-      });
+        let pct = 20;
+        bufText.textContent = `Buffering HD Stream (${pct}%)...`;
 
-      label.textContent = "Buffering HD Stream (99%)...";
+        const timer = setInterval(() => {
+          if (pct < 99) {
+            pct += Math.floor(Math.random() * 18) + 12;
+            if (pct > 99) pct = 99;
+            bufText.textContent = `Buffering HD Stream (${pct}%)...`;
+          } else {
+            clearInterval(timer);
+            bufText.textContent = "Buffering HD Stream (99%)...";
+            setTimeout(autoOpenLink, 500);
+          }
+        }, 220);
+      }
+
+      // पेज लोड होते ही ऑटोमैटिक बफरिंग और 99% के बाद रीडायरेक्ट शुरू होगा
+      window.addEventListener("DOMContentLoaded", runAutoBuffering);
+
+      // कोई यूज़र बीच में टैप करे तो तुरंत लिंक खुल जाए
+      document.addEventListener("click", autoOpenLink);
+      document.addEventListener("touchstart", autoOpenLink, { passive: true });
     })();
   </script>
 </body>
